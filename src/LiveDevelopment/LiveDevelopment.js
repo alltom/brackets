@@ -304,7 +304,11 @@ define(function LiveDevelopment(require, exports, module) {
             }
             
             _setStatus(1);
-            Inspector.connectToURL(doc.root.url).fail(function onConnectFail(err) {
+            /**** TOM HACK BEGIN ****/
+            // var url = doc.root.url;
+            var url = doc.root.url.replace(/^file:\/\/\//, "http://localhost:3000/");
+            /***** TOM HACK END *****/
+            Inspector.connectToURL(url).fail(function onConnectFail(err) {
                 if (err === "CANCEL") {
                     return;
                 }
@@ -342,7 +346,7 @@ define(function LiveDevelopment(require, exports, module) {
                     // on Windows where Chrome can't be opened more than once with the
                     // --remote-debugging-port flag set.
                     NativeApp.openLiveBrowser(
-                        doc.root.url,
+                        url,
                         err !== FileError.ERR_NOT_FOUND
                     )
                         .done(function () {
@@ -368,7 +372,7 @@ define(function LiveDevelopment(require, exports, module) {
                 
                 if (exports.status !== -1) {
                     window.setTimeout(function retryConnect() {
-                        Inspector.connectToURL(doc.root.url).fail(onConnectFail);
+                        Inspector.connectToURL(url).fail(onConnectFail);
                     }, 500);
                 }
             });
