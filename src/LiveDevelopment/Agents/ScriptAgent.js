@@ -36,6 +36,7 @@ define(function ScriptAgent(require, exports, module) {
     var DOMAgent = require("LiveDevelopment/Agents/DOMAgent");
 
     var _load; // the load promise
+    var _loaded; // whether currently loaded
     var _urlToScript; // url -> script info
     var _idToScript; // id -> script info
     var _insertTrace; // the last recorded trace of a DOM insertion
@@ -126,16 +127,22 @@ define(function ScriptAgent(require, exports, module) {
         Inspector.on("Debugger.scriptFailedToParse", _onScriptFailedToParse);
         Inspector.on("Debugger.paused", _onPaused);
         Inspector.on("DOM.childNodeInserted", _onChildNodeInserted);
+        _loaded = true;
         return _load;
     }
 
     /** Clean up */
     function unload() {
+        _loaded = false;
         Inspector.off("DOMAgent.getDocument", _onGetDocument);
         Inspector.off("Debugger.scriptParsed", _onScriptParsed);
         Inspector.off("Debugger.scriptFailedToParse", _onScriptFailedToParse);
         Inspector.off("Debugger.paused", _onPaused);
         Inspector.off("DOM.childNodeInserted", _onChildNodeInserted);
+    }
+    
+    function loaded() {
+        return _loaded;
     }
 
     // Export public functions
@@ -143,4 +150,5 @@ define(function ScriptAgent(require, exports, module) {
     exports.scriptForURL = scriptForURL;
     exports.load = load;
     exports.unload = unload;
+    exports.loaded = loaded;
 });
