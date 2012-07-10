@@ -446,6 +446,9 @@ define(function LiveDevelopment(require, exports, module) {
         $(DocumentManager).on("currentDocumentChange", _onDocumentChange);
     }
 
+    // alltom wanted this for brackets-debugger
+    exports._urlToPath = _urlToPath;
+    
     // Export public functions
     exports.agents = agents;
     exports.open = open;
