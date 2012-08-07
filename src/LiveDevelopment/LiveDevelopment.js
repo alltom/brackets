@@ -97,11 +97,11 @@ define(function LiveDevelopment(require, exports, module) {
     // This object is used as a set (thus all properties have the value 'true').
     // Property names should match property names in the 'agents' object.
     var _enabledAgentNames = {
-        "console": true,
-        "remote": true,
-        "network": true,
-        "dom": true,
-        "css": true
+        "console": true
+        // "remote": true,
+        // "network": true,
+        // "dom": true,
+        // "css": true
     };
     // store the names (matching property names in the 'agent' object) of agents that we've loaded
     var _loadedAgentNames = [];
@@ -314,6 +314,11 @@ define(function LiveDevelopment(require, exports, module) {
         console.error(message, error);
     }
 
+    /** Triggered by agents failing to load */
+    function _onAgentLoadError() {
+        console.error('an agent failed to load', arguments);
+    }
+    
     /** Run when all agents are loaded */
     function _onLoad() {
         var doc = _getCurrentDocument();
@@ -333,7 +338,7 @@ define(function LiveDevelopment(require, exports, module) {
     function _onConnect(event) {
         var promises = loadAgents();
         _setStatus(STATUS_LOADING_AGENTS);
-        $.when.apply(undefined, promises).then(_onLoad, _onError);
+        $.when.apply(undefined, promises).then(_onLoad, _onAgentLoadError);
     }
 
     /** Triggered by Inspector.disconnect */
@@ -371,6 +376,8 @@ define(function LiveDevelopment(require, exports, module) {
             showWrongDocError();
 
         } else {
+            var url = doc.root.url.replace("file://", "http://localhost:3000");
+
             // For Sprint 6, we only open live development connections for HTML files
             // FUTURE: Remove this test when we support opening connections for different
             // file types.
@@ -381,7 +388,7 @@ define(function LiveDevelopment(require, exports, module) {
             }
 
             _setStatus(STATUS_CONNECTING);
-            Inspector.connectToURL(doc.root.url).then(result.resolve, function onConnectFail(err) {
+            Inspector.connectToURL(url).then(result.resolve, function onConnectFail(err) {
                 if (err === "CANCEL") {
                     result.reject(err);
                     return;
@@ -425,7 +432,7 @@ define(function LiveDevelopment(require, exports, module) {
                     // on Windows where Chrome can't be opened more than once with the
                     // --remote-debugging-port flag set.
                     NativeApp.openLiveBrowser(
-                        doc.root.url,
+                        url,
                         err !== FileError.ERR_NOT_FOUND
                     )
                         .done(function () {
@@ -453,7 +460,7 @@ define(function LiveDevelopment(require, exports, module) {
 
                 if (exports.status !== STATUS_ERROR) {
                     window.setTimeout(function retryConnect() {
-                        Inspector.connectToURL(doc.root.url).then(result.resolve, onConnectFail);
+                        Inspector.connectToURL(url).then(result.resolve, onConnectFail);
                     }, 500);
                 }
             });
