@@ -31,7 +31,8 @@ require.config({
         "i18n" : "thirdparty/i18n"
     },
     // store the locale in localStorage until CEF sets the correct navigator.language
-    locale: window.localStorage.getItem("locale")
+    locale: window.localStorage.getItem("locale"),
+    waitSeconds: 30
 });
 
 /**
