@@ -195,7 +195,7 @@ define(function Inspector(require, exports, module) {
             host = "127.0.0.1";
         }
         if (!port) {
-            port = 9222;
+            port = 9234;
         }
         var def = new $.Deferred();
         var request = new XMLHttpRequest();

@@ -53,14 +53,8 @@ define(function (require, exports, module) {
     function openLiveBrowser(url, enableRemoteDebugging) {
         var result = new $.Deferred();
         
-        brackets.app.openLiveBrowser(url, enableRemoteDebugging, function onRun(err, pid) {
-            if (!err) {
-                liveBrowserOpenedPIDs.push(pid);
-                result.resolve(pid);
-            } else {
-                result.reject(_browserErrToFileError(err));
-            }
-        }, liveBrowserUserDataDir);
+        window.open(url);
+        result.resolve();
         
         return result.promise();
     }
